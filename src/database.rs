@@ -26,6 +26,10 @@ fn distance_sq(a: &Point, b: &Point) -> f64 {
     return (a.x-b.x).powf(2.) + (a.y-b.y).powf(2.);
 }
 
+fn distance_between_internal(a: &Entry, b: &Entry) -> f64 {
+    distance(&a.position, &b.position);
+}
+
 impl Database {
     pub fn insert(&mut self, e: Entry) {
         self.last_id += 1;
@@ -50,13 +54,19 @@ impl Database {
         return items;
     }
 
-    pub fn distance_between(&self, a: &Id, b: &Id) -> Option<f64> {
-        let ma = self.data.get(a);
-        let mb = self.data.get(b);
+    fn liftFromIds2<T>(&self, f: Fn(&Entry, &Entry) -> T) -> Fn(&Id, &Id) -> Option<T> {
+        |a: &Id, b: &Id| {
+            let ma = self.data.get(a);
+            let mb = self.data.get(b);
 
-        match (ma,mb) {
-            (Some(a), Some (b)) => Some(distance(&a.position, &b.position)),
-            _ => None
+            match (ma,mb) {
+                (Some(a), Some (b)) => Some(f(&a, &b)),
+                _ => None
+            }
         }
+    }
+
+    pub fn distance_between(&self, a: &Id, b: &Id) -> Option<f64> {
+        liftFromIds2(distance_between_internal)(a,b);
     }
 }

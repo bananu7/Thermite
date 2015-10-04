@@ -49,4 +49,14 @@ impl Database {
         }
         return items;
     }
+
+    pub fn distance_between(&self, a: &Id, b: &Id) -> Option<f64> {
+        let ma = self.data.get(a);
+        let mb = self.data.get(b);
+
+        match (ma,mb) {
+            (Some(a), Some (b)) => Some(distance(&a.position, &b.position)),
+            _ => None
+        }
+    }
 }

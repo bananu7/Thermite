@@ -11,6 +11,15 @@ pub struct Entry {
     pub data: String,
 }
 
+impl Entry {
+    pub fn new(position: Point, data: String) -> Entry {
+        Entry {
+            position: position,
+            data: data
+        }
+    }
+}
+
 pub type Id = i64;
 
 pub struct Database {
@@ -31,9 +40,10 @@ fn distance_between_internal(a: &Entry, b: &Entry) -> f64 {
 }
 
 impl Database {
-    pub fn insert(&mut self, e: Entry) {
+    pub fn insert(&mut self, e: Entry) -> Id {
         self.last_id += 1;
         self.data.insert(self.last_id, e);
+        return self.last_id;
     }
 
     pub fn new() -> Database {
@@ -54,12 +64,12 @@ impl Database {
         return items;
     }
 
-    fn lift_from_ids2<T, F>(&self, f: F, a: &Id, b: &Id) -> Option<T>
+    fn lift_from_ids2<T, F>(&self, f: F, a: Id, b: Id) -> Option<T>
         where
             F : Fn(&Entry, &Entry) -> T,
     {
-        let ma = self.data.get(a);
-        let mb = self.data.get(b);
+        let ma = self.data.get(&a);
+        let mb = self.data.get(&b);
 
         match (ma,mb) {
             (Some(a), Some (b)) => Some(f(&a, &b)),
@@ -67,7 +77,7 @@ impl Database {
         }
     }
 
-    pub fn distance_between(&self, a: &Id, b: &Id) -> Option<f64> {
+    pub fn distance_between(&self, a: Id, b: Id) -> Option<f64> {
         self.lift_from_ids2(distance_between_internal, a, b)
     }
 }

@@ -19,15 +19,15 @@ pub struct Database {
 }
 
 fn distance(a: &Point, b: &Point) -> f64 {
-    return distance_sq(a, b).sqrt();
+    distance_sq(a, b).sqrt()
 }
 
 fn distance_sq(a: &Point, b: &Point) -> f64 {
-    return (a.x-b.x).powf(2.) + (a.y-b.y).powf(2.);
+    (a.x-b.x).powf(2.) + (a.y-b.y).powf(2.)
 }
 
 fn distance_between_internal(a: &Entry, b: &Entry) -> f64 {
-    distance(&a.position, &b.position);
+    distance(&a.position, &b.position)
 }
 
 impl Database {
@@ -54,19 +54,20 @@ impl Database {
         return items;
     }
 
-    fn liftFromIds2<T>(&self, f: Fn(&Entry, &Entry) -> T) -> Fn(&Id, &Id) -> Option<T> {
-        |a: &Id, b: &Id| {
-            let ma = self.data.get(a);
-            let mb = self.data.get(b);
+    fn lift_from_ids2<T, F>(&self, f: F, a: &Id, b: &Id) -> Option<T>
+        where
+            F : Fn(&Entry, &Entry) -> T,
+    {
+        let ma = self.data.get(a);
+        let mb = self.data.get(b);
 
-            match (ma,mb) {
-                (Some(a), Some (b)) => Some(f(&a, &b)),
-                _ => None
-            }
+        match (ma,mb) {
+            (Some(a), Some (b)) => Some(f(&a, &b)),
+            _ => None
         }
     }
 
     pub fn distance_between(&self, a: &Id, b: &Id) -> Option<f64> {
-        liftFromIds2(distance_between_internal)(a,b);
+        self.lift_from_ids2(distance_between_internal, a, b)
     }
 }

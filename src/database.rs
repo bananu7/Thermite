@@ -72,7 +72,7 @@ impl Database {
         let mb = self.data.get(&b);
 
         match (ma,mb) {
-            (Some(a), Some (b)) => Some(f(&a, &b)),
+            (Some(a), Some(b)) => Some(f(&a, &b)),
             _ => None
         }
     }

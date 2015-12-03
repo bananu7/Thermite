@@ -1,5 +1,5 @@
 [package]
 
-name = "hello_world"
+name = "thermite"
 version = "0.0.1"
 authors = [ "Bartek Banachewicz <bananu7@o2.pl>" ]
